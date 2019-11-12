@@ -40,7 +40,11 @@
   <div class="question">
     <ul class="list" id="q7">
       <li>Q7-1</li>
-      <li>Q7-2</li>
+      <li><ul>
+        <li>Q7-2-1</li>
+        <li>Q7-2-2</li>
+        <li>Q7-2-3</li>
+      </ul></li>
       <li>Q7-3</li>
       <li>Q7-4</li>
     </ul>
@@ -75,7 +79,7 @@
 
     // 第2問  id='q2'の要素をクリックしたら背景色をピンクにせよ。
     $('#q2').click(function() {
-      $(this).css('background-color', 'cadetblue');
+      $(this).css('background-color', 'pink');
     });
     // 第3問  id='q3'の要素をクリックしたら2秒かけてフェードアウトさせよ。
     $('#q3').click(fadeOut_twosec);
@@ -101,8 +105,10 @@
       }, 2000);
     });
     // 第7問  id='q7'の子要素をクリックしたら、その要素のインデックス（何番目か）をconsole.log()とalert()を用いて表示させよ。
-    $('#q7 li').click(function(){
-      let q7_child = $(this).index();
+    // $this イベントを発火させた要素を指す。
+    $('#q7>li').click(function(){
+      var q7_child = $(this).index();
+      // indexは兄弟要素からのindex番号を返す。
       console.log(q7_child);
       alert(q7_child);
     });
@@ -114,12 +120,12 @@
     });
     // 第9問  id='q9'の要素をクリックしたらこの要素に設定してあるdata属性をconsoleに表示せよ。
     $('#q9').click(function(){
-      let q9_data = $(this).data('text');
+      var q9_data = $(this).data('text');
       console.log(q9_data);
     });
     // 第10問 id='q10'の子要素をクリックしたら、その要素のインデックスと等しいid='q11'の子要素にlargeというクラスを追加せよ。
-    $('#q10 li').click(function(){
-      let q10_child_index = $(this).index();
+    $('#q10>li').click(function(){
+      var q10_child_index = $(this).index();
       $('#q11 li').eq(q10_child_index).addClass('large');
     });
   });

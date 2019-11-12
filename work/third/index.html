@@ -18,8 +18,8 @@
       </ul>
       <ul class="contents">
         <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</li>
-        <li >Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</li>
-        <li >Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+        <li class="is-hidden">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</li>
+        <li class="is-hidden">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
       </ul>
     </div>
     <script src="../../common/js/jquery.js"></script>
@@ -32,8 +32,8 @@
       // .removeClass() クラスを削除します。
       $(function() {
         $('.nav li').click(function() {
-          let index_num = $(this).index();
-          $('.contents li').eq(!index_num).addClass('is-hidden');
+          var index_num = $(this).index();
+          $('.contents li').addClass('is-hidden');
           $('.contents li').eq(index_num).removeClass('is-hidden');
         });
       });
