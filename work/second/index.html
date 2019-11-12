@@ -24,9 +24,17 @@
       // 今回やるのはモーダルです。
       // .modal-show をクリックすることで .modal をfadeInさせる。
       // .modal-close をクリックで .modal をfadeOutさせる。
-      // .click() クリック時のイベントを登録する。
-      // .fadeIn() 一定時間かけてフェードインする。
-      // .fadeOut() 一定時間かけてフェードアウトする。
+      $(function(){
+        // .click() クリック時のイベントを登録する。
+        $('.modal-show').click(function() {
+          // .fadeIn() 一定時間かけてフェードインする。
+            $('.modal').fadeIn(500);
+        });
+        $('.modal-close').click(function() {
+          // .fadeOut() 一定時間かけてフェードアウトする。
+            $('.modal').fadeOut(500);
+        });
+      });
     </script>
   </body>
 </html>
