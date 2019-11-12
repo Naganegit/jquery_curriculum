@@ -119,7 +119,8 @@
     });
     // 第10問 id='q10'の子要素をクリックしたら、その要素のインデックスと等しいid='q11'の子要素にlargeというクラスを追加せよ。
     $('#q10 li').click(function(){
-      $('#q11 li').eq($(this).index()).addClass('large');
+      let q10_child_index = $(this).index();
+      $('#q11 li').eq(q10_child_index).addClass('large');
     });
   });
 </script>
