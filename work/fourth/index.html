@@ -63,7 +63,7 @@
           // boolean[キューに含まれるアニメーションを削除するか？],
           // boolean[現在実行中のアニメーションを終えるか？]
           // );
-          $(this).children().stop(true, false).slideDown(400);
+          $(this).children('.menu__list__childList').stop(true, false).slideDown(400);
         }, function () {
           $(this).children('.menu__list__childList').stop(true, false).slideUp(400);
         });
