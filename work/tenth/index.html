@@ -73,13 +73,14 @@
         var search_box = $('#js-search-word')
         var search_word = "";
         var page = 1;
-        var error_messages = {
-          "keyword must be set" : "検索キーワードが入力されていません。<br>検索キーワードを入力し、もう一度お試しください。<br>",
-          "keyword length must be over 2 characters" : "検索キーワードは二文字以上である必要があります。<br>二文字以上の検索キーワードを入力し、もう一度お試しください。<br>",
-          "number of allowed requests has been exceeded for this API. please try again soon." : "一時的なアクセス制限にかかっています。<br>しばらく時間を空けて再度検索してください。<br>",
-          "not_found" : "お探しのデータがありません。<br>申し訳ございませんが、別のキーワードで検索してください。<br>",
-          "system_error" : "システムエラーが発生しています。<br>詳しくは、管理者までお問い合わせください。<br>"
-        };
+
+        // var error_messages = {
+        //   "keyword must be set" : "検索キーワードが入力されていません。<br>検索キーワードを入力し、もう一度お試しください。<br>",
+        //   "keyword length must be over 2 characters" : "検索キーワードは二文字以上である必要があります。<br>二文字以上の検索キーワードを入力し、もう一度お試しください。<br>",
+        //   "number of allowed requests has been exceeded for this API. please try again soon." : "一時的なアクセス制限にかかっています。<br>しばらく時間を空けて再度検索してください。<br>",
+        //   "not_found" : "お探しのデータがありません。<br>申し訳ございませんが、別のキーワードで検索してください。<br>",
+        //   "system_error" : "システムエラーが発生しています。<br>詳しくは、管理者までお問い合わせください。<br>"
+        // };
 
         $('#js-search-button').click(function(){
           init_page();
@@ -100,9 +101,9 @@
           });
         });
 
-        // 検索ワードが違う場合、ページ数を初期化する
+        // 検索ワードが違う場合、ページ数とリストを初期化する
         function init_page() {
-          if( search_word == search_box.val() ) {
+          if( search_word === search_box.val() ) {
             page++;
           } else {
             $('.lists').children().remove();
@@ -112,17 +113,27 @@
         }
 
         function search_book(data) {
-          var books = "";
-          $.each(data.Items, function(index, item){
-            var book = item.Item;
-            books += book_card(book.itemUrl, book.mediumImageUrl, book.title, book.author, book.publisherName);
-          });
-          $('.lists').prepend(books);
-
           if ( !data.count ) {
             show_msg("検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。");
-          } else if ( data.count && $.find('.message') ) {
-            remove_msg();
+          } else if ( data.count ) {
+            if( $.find('.message') ) {
+              remove_msg();
+            }
+            var books = "";
+            $.each(data.Items, function(index, item){
+              var book = "<li class='lists__item'>" +
+                "<div class='lists__item__inner'>" +
+                  "<a href='" + item.Item.itemUrl + "' class='lists__item__link' target='_blank'>" +
+                    "<img src='" + item.Item.mediumImageUrl + "' class='lists__item__img' alt='" + item.Item.title + "'>" + 
+                    "<p class='lists__item__detail'>作品名：　" + item.Item.title + "</p>" +
+                    "<p class='lists__item__detail'>作者　：　" + item.Item.author + "</p>" +
+                    "<p class='lists__item__detail'>出版社：　" + item.Item.publisherName + "</p>" + 
+                  "</a>" + 
+                "</div>" +
+              "</li>";
+              books += book;
+            });
+            $('.lists').prepend(books);
           }
         }
 
@@ -143,24 +154,11 @@
           if( jqXHR.status === 0){
             msg = "ネットワークに接続されていません。<br>ネットワークに接続し、もう一度お試しください。<br>";
           } else {
-            msg = error_messages[jqXHR.responseJSON.error_description];
+            // 直で表示してOK　そちらの方がよいかもよい（キーワードが半角の場合もわかれてくれる）
+            msg = jqXHR.responseJSON.error_description;
+            // msg = error_messages[jqXHR.responseJSON.error_description];
           }
           show_msg(msg);
-        }
-
-        function book_card(url, img, title, author, publisher){
-          var book = "<li class='lists__item'>" +
-            "<div class='lists__item__inner'>" +
-              "<a href='" + url + "' class='lists__item__link' target='_blank'>" +
-                "<img src='" + img + "' class='lists__item__img' alt='" + title + "'>" + 
-                "<p class='lists__item__detail'>作品名：　" + title + "</p>" +
-                "<p class='lists__item__detail'>作者　：　" + author + "</p>" +
-                "<p class='lists__item__detail'>出版社：　" + publisher + "</p>" + 
-              "</a>" + 
-            "</div>" +
-          "</li>";
-          return book;
-
         }
       });
     </script>
