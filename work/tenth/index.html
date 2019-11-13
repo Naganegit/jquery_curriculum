@@ -73,19 +73,16 @@
         var search_box = $('#js-search-word')
         var search_word = "";
         var page = 1;
+        var error_messages = {
+          "keyword must be set" : "検索キーワードが入力されていません。<br>検索キーワードを入力し、もう一度お試しください。<br>",
+          "keyword length must be over 2 characters" : "検索キーワードは二文字以上である必要があります。<br>二文字以上の検索キーワードを入力し、もう一度お試しください。<br>",
+          "number of allowed requests has been exceeded for this API. please try again soon." : "一時的なアクセス制限にかかっています。<br>しばらく時間を空けて再度検索してください。<br>",
+          "not_found" : "お探しのデータがありません。<br>申し訳ございませんが、別のキーワードで検索してください。<br>",
+          "system_error" : "システムエラーが発生しています。<br>詳しくは、管理者までお問い合わせください。<br>"
+        };
 
         $('#js-search-button').click(function(){
-          // 検索ワードが違う場合、ページ数を初期化する
-          if( search_word == search_box.val() ) {
-            page++;
-          } else {
-            $('.lists').children().remove();
-            page = 1;
-          };
-          search_word = search_box.val() ;
-
-          // ajax通信
-          // $.ajax()が返すjQueryXMLHttpRequest(jqXHR)オブジェクトに対する処理を行う。
+          init_page();
           $.ajax({
             url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
             datatype: 'json',
@@ -95,52 +92,39 @@
               keyword: search_word,
               page: page,
               hits: 20,
-            }
-          // jqXHR.done(function( data, textStatus, jqXHR ) {});
-          // deferred.done( doneCallbacks [, doneCallbacks] ) 　第2引数にも第1引数に続いて実行したいコールバック関数を指定することができる。
+            },
           }).done(function(data) {
-            console.log(data);
-            
-            // 検索結果の表示
-            var books = "";
-            $.each(data.Items, function(index, item){
-              var book = item.Item 
-              var url = book.itemUrl;
-              var img = book.mediumImageUrl;
-              var title = book.title;
-              var author = book.author;
-              var publisher= book.publisherName;              
-              books += book_card(url, img, title, author, publisher);
-            });
-            $('.lists').prepend(books);
-
-            // 検索結果が0件の時のメッセージ
-            if ( !data.count ) {
-              show_msg("検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。");
-            } else if ( data.count && $.find('.message') ) {
-              remove_msg();
-            }
-          // jqXHR.fail(function( jqXHR, textStatus, errorThrown ) {});
-          // deferred.fail( failCallbacks [, failCallbacks] ) done同様第2引数にもコールバック関数の指定が可能。
+            search_book(data);
           }).fail(function(jqXHR) {
-            var msg = ""
-            switch( jqXHR.responseJSON.error ){
-              case "wrong_parameter" :
-                msg = "検索キーワードが正しくありません。<br>正しいキーワードを入力してください。";
-                break;
-              case "too_many_requests" :
-                msg = "一時的なアクセス制限にかかっています。<br>しばらく時間を空けて再度検索してください。"
-                break;
-              case "not_found" :
-                msg = "お探しのデータがありません。<br>申し訳ございませんが、別のキーワードで検索してください。"
-                break;
-              case "system_error" :
-                msg = "現在システムエラーが発生しています。詳しくは、管理者までお問い合わせください。"
-                break;
-            }
-            show_msg(msg);
+            show_error_msg(jqXHR);
           });
         });
+
+        // 検索ワードが違う場合、ページ数を初期化する
+        function init_page() {
+          if( search_word == search_box.val() ) {
+            page++;
+          } else {
+            $('.lists').children().remove();
+            page = 1;
+          };
+          search_word = search_box.val() ;
+        }
+
+        function search_book(data) {
+          var books = "";
+          $.each(data.Items, function(index, item){
+            var book = item.Item;
+            books += book_card(book.itemUrl, book.mediumImageUrl, book.title, book.author, book.publisherName);
+          });
+          $('.lists').prepend(books);
+
+          if ( !data.count ) {
+            show_msg("検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。");
+          } else if ( data.count && $.find('.message') ) {
+            remove_msg();
+          }
+        }
 
         function show_msg(msg) {
           if( $.find('.message').length < 1 ) {
@@ -151,7 +135,17 @@
         }
 
         function remove_msg() {
-          $('.message').remove();          
+          $('.message').remove();
+        }
+
+        function show_error_msg(jqXHR) {
+          var msg = "";
+          if( jqXHR.status === 0){
+            msg = "ネットワークに接続されていません。<br>ネットワークに接続し、もう一度お試しください。<br>";
+          } else {
+            msg = error_messages[jqXHR.responseJSON.error_description];
+          }
+          show_msg(msg);
         }
 
         function book_card(url, img, title, author, publisher){
